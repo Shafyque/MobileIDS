@@ -1,6 +1,126 @@
-*.class
+package classes;
 
-# Package Files #
-*.jar
-*.war
-*.ear
+import java.io.*;
+import java.util.*;
+
+public class snort
+{
+  private String fileName;
+	private BufferedReader inFile;
+	
+	public snort()
+	{
+	}
+
+	public String getConfig()
+	{
+		String line;
+		StringBuffer allLines = new StringBuffer("");
+   
+  		
+  		try {
+  			FileReader fr = new FileReader("/etc/snort/snort.conf");
+  			BufferedReader br = new BufferedReader(fr);
+  			
+			while( (line=br.readLine()) != null)
+  			{
+   				allLines.append(line);
+   				allLines.append('\n');
+  			}
+   				
+			br.close();
+   			fr.close();
+   		}
+   			
+		catch (IOException e)
+  		{
+   			return "Can't find the Snort config file";
+  		}
+		
+		return allLines.toString();
+  	
+	}
+
+	public String getInfo()
+	{
+		String line;
+		StringBuffer allLines = new StringBuffer("");
+   
+   		try {
+  			FileReader fr = new FileReader("/var/log/snort/alert");
+  			BufferedReader br = new BufferedReader(fr);
+  			
+			while( (line=br.readLine()) != null)
+  			{
+   				allLines.append(line);
+   				allLines.append('\n');
+  			}
+   				
+			br.close();
+   			fr.close();
+   		}
+   			
+		catch (IOException e)
+  		{
+   			return "Can't find the Snort alert file";
+  		}
+		
+		return allLines.toString();
+  	}
+		
+	public String getStatus()
+	{
+		
+   		try {
+  			FileReader fr = new FileReader("/var/lock/subsys/snort");
+  			fr.close();
+   		}
+   			
+		catch (IOException e)
+  		{
+   			return "Snort status: stopped";
+  		}
+		
+		return "Snort status: running";
+ 	}
+	
+	public static void start() throws IOException
+	{
+		Process proc = Runtime.getRuntime().exec("service snortd start");
+		
+		try {
+			proc.waitFor();
+		}
+		
+		catch (InterruptedException e) {
+			System.out.println("InterruptedException raised: "+e.getMessage());
+		}
+	}
+
+	public static void stop() throws IOException
+	{
+		Process proc = Runtime.getRuntime().exec("service snortd stop");
+		
+		try {
+			proc.waitFor();
+		}
+		
+		catch (InterruptedException e) {
+			System.out.println("InterruptedException raised: "+e.getMessage());
+		}
+	}
+	
+	public static void restart() throws IOException
+	{
+		Process proc = Runtime.getRuntime().exec("service snortd restart");
+		
+		try {
+			proc.waitFor();
+		}
+		
+		catch (InterruptedException e) {
+			System.out.println("InterruptedException raised: "+e.getMessage());
+		}
+	}
+}
+
